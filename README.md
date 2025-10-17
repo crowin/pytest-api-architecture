@@ -7,7 +7,7 @@ This repository shows how to write API tests in Python using several approaches 
 - Soft assertions to collect multiple failures in one test
 - Clean pytest configuration, fixtures, and Allure reporting
 
-The tests use the public dummy API at https://dummyjson.com.
+The tests are implemented for https://github.com/crowin/marketplace-spring-microservices (written by me)
 
 ## Key Features and Approaches
 
@@ -18,11 +18,11 @@ The tests use the public dummy API at https://dummyjson.com.
   - The folder is removed after the test session finishes.
 
 - API client layer
-  - `core/api/carts_client.py` wraps HTTP calls with `requests.Session`.
+  - `core/api/market_client.py` wraps HTTP calls with `requests.Session`.
   - Authorization headers are attached once during client creation.
 
 - DTOs with Pydantic
-  - `core/api/carts_dto.py` defines response models (`Product`, `Cart`, `CartsDto`).
+  - `core/api/market/market_dto.py` defines response models (`Product`, `Cart`, `CartDto`).
   - Models use field constraints and alias generation (camelCase) to match API payloads and validate data.
 
 - Soft assertions
@@ -36,19 +36,19 @@ The tests use the public dummy API at https://dummyjson.com.
 - Allure reporting
   - Allure steps (`@allure.step`) and titles are used across clients and tests.
 
-## Project Structure
+## Part of Project Structure
 
 - `core/`
-  - `api/auth_client.py` — login and local token session helpers
-  - `api/carts_client.py` — Carts API client (GET carts, get by id, get by user id)
-  - `api/carts_dto.py` — Pydantic response models (DTOs)
+  - `api/user/auth_client.py` — login and local token session helpers
+  - `api/market/market_client.py` — Carts API client (GET carts, get by id, get by user id)
+  - `api/market/market_dto.py.py` — Pydantic response models (DTOs)
   - `api/user.py` — simple `User` entity that reads token from local session
   - `config.py` — builds URLs and folder names from environment variables
 - `tests/`
   - `conftest.py` — session init/cleanup, fixtures
   - `api_assertions.py` — basic response status assertions
   - `soft_assertion.py` — soft assertion helper
-  - `dump_service/test_products_api.py` — example tests for carts endpoints
+  - `market/test_products_api.py` — example tests for carts endpoints
   - `test_user.py` — test users built from environment
 - `.env` — environment variables used by pytest/Code under test
 - `pytest.ini` — pytest configuration (env file, warnings, addopts)
@@ -71,22 +71,6 @@ The tests use the public dummy API at https://dummyjson.com.
 ## Environment Configuration
 
 The project uses `pytest-dotenv` to load variables from the `.env` file in the repository root. Default values are already provided for the dummy API:
-
-```
-BASE_URL=https://dummyjson.com
-CARTS_API=carts
-AUTH_API=auth
-
-USER_SESSIONS_DIR=sessions_temp
-
-BASIC_USER_ID=1
-BASIC_USER_NAME=emilys
-BASIC_USER_PASSWORD=emilyspass
-
-SECOND_USER_ID=2
-SECOND_USER_NAME=michaelw
-SECOND_USER_PASSWORD=michaelwpass
-```
 
 You can adjust these values if needed. The `USER_SESSIONS_DIR` is created automatically for token files and removed after the test session.
 
@@ -134,9 +118,9 @@ If you do not have the CLI, install it following the official Allure instruction
 ## Example Test Flow
 
 Example from `tests/dump_service/test_products_api.py`:
-- Get all carts with `basic_user_api.get_carts()`.
+- Get all carts with `basic_user_api.get_cart()`.
 - Assert the HTTP status is OK.
-- Parse and validate the response into `CartsDto`.
+- Parse and validate the response into `CartDto`.
 - Use `SoftAssert` to ensure every cart has at least one product.
 
 ## Notes and Good Practices Shown

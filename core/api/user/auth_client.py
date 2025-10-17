@@ -3,17 +3,16 @@ from pathlib import Path
 
 import allure
 import requests
+from requests import Response
 
-from core.config import Config
+from core.common.config import Config
 
-@allure.step("Auth user")
-def auth_user(username, password) -> str:
-    body={"username": username, "password": password, "expiresInMins": 30}
-    resp = requests.post(f"{Config.AUTH_API_URL}/login", json=body)
-    resp.raise_for_status()
-    return resp.json()["accessToken"]
+@allure.step("Auth {username} user")
+def auth_user(username, password) -> Response:
+    return requests.post(f"{Config.USERS_API_URL}/login", json={"username": username, "password": password})
 
-@allure.step("Get user session")
+
+@allure.step("Get user {username} session")
 def get_user_session(username):
     project_root = Path().resolve()
     folder = project_root / Config.USER_SESSIONS_DIR

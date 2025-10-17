@@ -2,13 +2,12 @@ import json
 import shutil
 from pathlib import Path
 
-import allure
 import pytest
 
-from core.api.auth_client import auth_user
-from core.api.carts_client import CartsApi
-from core.api.user import User
-from core.config import Config
+from core.api.user.auth_client import auth_user
+from core.api.market.market_client import MarketApi
+from core.common.user import User
+from core.common.config import Config
 from tests.test_user import TestUser
 
 
@@ -22,10 +21,13 @@ def pytest_sessionfinish(session, exitstatus):
         print("Tear down config")
         _remove_all_sessions()
 
+@pytest.fixture(scope="session")
+def basic_user():
+    yield TestUser.FIRST_USER
 
 @pytest.fixture(scope="session")
-def basic_user_api():
-    yield CartsApi(TestUser.BASIC_USER)
+def basic_user_api(basic_user):
+    yield MarketApi(basic_user)
 
 
 def _init_all_sessions():
@@ -38,7 +40,9 @@ def _init_all_sessions():
             continue
         user_file = folder / f"{user.username}_token.json"
         if not user_file.exists():
-            token = auth_user(user.username, user.password)
+            resp = auth_user(user.username, user.password)
+            resp.raise_for_status()
+            token = resp.json()["token"]
             with user_file.open("w", encoding="utf-8") as f:
                 json.dump(token, f, ensure_ascii=False, indent=4)
             print(f"Session file created for {user.username}")
