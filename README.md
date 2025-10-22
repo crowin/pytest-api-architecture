@@ -31,7 +31,7 @@ The tests are implemented for https://github.com/crowin/marketplace-spring-micro
 
 - Pytest fixtures and hooks
   - `tests/conftest.py` prepares auth sessions in `pytest_configure` and removes them in `pytest_sessionfinish`.
-  - `basic_user_api` fixture exposes a ready-to-use `CartsApi` client for tests.
+  - `basic_user_api` fixture exposes a ready-to-use `MarketApi` client for tests.
 
 - Allure reporting
   - Allure steps (`@allure.step`) and titles are used across clients and tests.
