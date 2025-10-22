@@ -1,12 +1,15 @@
 import allure
 from requests import Response
 
-@allure.step("Verify that response is Ok")
-def verify_ok_resp(resp: Response):
-    assert resp.status_code in (200, 204), f"Response {resp.request.method} {resp.request.url} is wrong. Body: {resp.text}"
+from tests.test_utils import short_url
 
-@allure.step("Verify that response is Bad")
+
+def verify_ok_resp(resp: Response):
+    with allure.step(f"Verify {resp.request.method} {short_url(resp)} is Ok"):
+        assert resp.status_code in (200, 204), f"Response is wrong. Code: {resp.status_code}, body: {resp.text}"
+
 def verify_bad_resp(resp: Response, error_msg = None):
-    assert resp.status_code > 204, f"Response {resp.request.method} {resp.request.url} is successful"
-    if error_msg:
-        assert resp.json()["message"] == error_msg
+    with allure.step(f"Verify {resp.request.method} {short_url(resp)} is wrong"):
+        assert resp.status_code > 204, f"Response is successful. Code: {resp.status_code}, body: {resp.text}"
+        if error_msg:
+            assert resp.json()["message"] == error_msg

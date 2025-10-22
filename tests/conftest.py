@@ -9,10 +9,12 @@ from core.api.market.market_client import MarketApi
 from core.common.user import User
 from core.common.config import Config
 from tests.test_user import TestUser
+from tests.test_utils import patch_requests
 
 
 def pytest_configure(config):
     print("Preparing config")
+    patch_requests()
     _init_all_sessions()
 
 
@@ -21,9 +23,11 @@ def pytest_sessionfinish(session, exitstatus):
         print("Tear down config")
         _remove_all_sessions()
 
+
 @pytest.fixture(scope="session")
 def basic_user():
-    yield TestUser.FIRST_USER
+    yield TestUser.BASIC_USER
+
 
 @pytest.fixture(scope="session")
 def basic_user_api(basic_user):
@@ -46,6 +50,7 @@ def _init_all_sessions():
             with user_file.open("w", encoding="utf-8") as f:
                 json.dump(token, f, ensure_ascii=False, indent=4)
             print(f"Session file created for {user.username}")
+
 
 def _remove_all_sessions():
     project_root = Path().resolve()

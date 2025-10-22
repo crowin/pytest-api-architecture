@@ -22,6 +22,7 @@ class CartItem(ExtendedBaseModel):
     quantity: Annotated[int, Field(ge=1)]
     total_price: Annotated[float, Field(ge=0)]
 
+
 class CartData(ExtendedBaseModel):
     items: List[CartItem]
     total_price: Annotated[float, Field(ge=0)]

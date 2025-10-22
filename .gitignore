@@ -1,3 +1,5 @@
 /.idea/
 /.venv/
 /pytest_token_auth_example.iml
+/allure-results/
+/python_tests_api_ui.iml

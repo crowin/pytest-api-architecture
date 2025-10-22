@@ -30,6 +30,6 @@ class MarketApi:
         return self.session.put(f'{self.base_url}/cart', json={'itemId': item_id, 'quantity': quantity})
 
     @allure.step("Get products - GET /products")
-    def get_products(self):
-        return self.session.get(f'{self.base_url}/products')
+    def get_products(self, page=0, limit=8):
+        return self.session.get(f'{self.base_url}/products', params={'page': page, 'limit': limit})
 

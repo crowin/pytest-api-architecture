@@ -8,6 +8,7 @@ from core.common.config import Config
 def playwright_browser():
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=False)
+        pw.selectors.set_test_id_attribute("data-test-id")
         yield browser
         browser.close()
 
