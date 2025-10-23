@@ -4,6 +4,7 @@ from playwright.sync_api import expect
 
 from core.api.market.market_client import MarketApi
 from core.api.market.market_dto import ProductsDto, CartDto
+from tests.soft_assertion import SoftAssert
 from tests.test_user import TestUser
 from tests.ui.browser_helper import auth_user_by_token
 from tests.ui.pom import ProductsPage
@@ -35,14 +36,18 @@ def test_add_to_cart(page, basic_user_api):
     MarketApi(TestUser.SECOND_USER).clear_cart()
 
     product_page = ProductsPage(page)
-    product_page.product(product_first.title).add_to_cart(product_first_count)
-    product_page.product(product_first.title).add_to_cart(product_second_count)
+    product_page.product_by_name(product_first.title).add_to_cart(product_first_count)
+    product_page.product_by_name(product_first.title).add_to_cart(product_second_count)
 
     actual_first_user_cart = CartDto(**basic_user_api.get_cart().json())
     actual_second_user_cart = CartDto(**MarketApi(TestUser.SECOND_USER).get_cart())
-
     assert len(actual_first_user_cart.data.items) == product_first_count + product_second_count, "Wrong number of products in cart"
-    assert actual_first_user_cart.data.items[0].product.id == product_first.id, "Wrong product in cart"
-    assert actual_first_user_cart.data.items[1].product.id == product_second.id, "Wrong product in cart"
-    assert actual_second_user_cart.data.total_price == 0, "Second user cart should be empty"
-    assert len(actual_second_user_cart.data.items) == 0, "Second user cart should be empty"
+
+    soft = SoftAssert()
+    soft.check(actual_first_user_cart.data.items[0].product.id == product_first.id, "Wrong product in cart")
+    soft.check(actual_first_user_cart.data.items[1].product.id == product_second.id, "Wrong product in cart")
+    soft.check(actual_second_user_cart.data.total_price == 0, "Second user cart should be empty")
+    soft.check(len(actual_second_user_cart.data.items) == 0, "Second user cart should be empty")
+    soft.assert_all()
+
+    expect(product_page.navigation().cart()).to_contain_text(f"Cart({product_first_count + product_second_count})")

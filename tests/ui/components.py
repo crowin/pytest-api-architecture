@@ -16,10 +16,18 @@ class ProductElement:
     def price(self):
         return self.product.locator(".text-slate-600")
 
+    @allure.step("Get product quantity")
+    def quantity(self):
+        return self.product.get_by_test_id("product-qty")
+
+    @allure.step("Get product add to cart button")
+    def add_to_cart_button(self):
+        return self.product.get_by_test_id("product-add")
+
     @allure.step("Add product to cart")
     def add_to_cart(self, quantity: int = 1):
-        self.product.get_by_test_id("product-qty").fill(str(quantity))
-        self.product.get_by_test_id("product-add").click()
+        self.quantity().fill(str(quantity))
+        self.add_to_cart_button().click()
 
 
 class Pagination:
@@ -47,20 +55,20 @@ class HeaderMenu:
 
     @allure.step("Get login button")
     def login(self, user):
-        self.navigation.get_by_role("button", name="Login")
+        return self.navigation.get_by_role("button", name="Login")
 
     @allure.step("Get logout button")
     def logout(self):
-        self.navigation.get_by_role("button", name="Logout")
+        return self.navigation.get_by_role("button", name="Logout")
 
     @allure.step("Get cart button")
     def cart(self):
-        self.navigation.get_by_test_id("cart-link")
+        return self.navigation.get_by_test_id("cart-link")
 
     @allure.step("Get orders button")
     def orders(self):
-        self.navigation.get_by_test_id("orders-link")
+        return self.navigation.get_by_test_id("orders-link")
 
     @allure.step("Get products button")
     def products(self):
-        self.navigation.get_by_test_id("products-link")
+        return self.navigation.get_by_test_id("products-link")

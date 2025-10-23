@@ -10,5 +10,6 @@ def auth_user_by_token(page: Page, user: User):
     page.reload()
 
 @allure.step("Clear cookies")
-def clear_cookies(context: BrowserContext):
-    context.clear_cookies()
+def clear_browser_cookies(page: Page):
+    page.context.clear_cookies()
+    page.goto("/")
